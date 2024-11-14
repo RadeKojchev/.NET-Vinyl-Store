@@ -1,0 +1,171 @@
+﻿@model IEnumerable<VtorProektRSWEB.Models.Track>
+@if (TempData["CreatePlaylistMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" style="color: black; background-color: yellow;">
+        @TempData["CreatePlaylistMessage"]
+        <button type="button" class="custom-close" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+    </div>
+}
+
+@if(TempData["Message"] != null) 
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" style="color: black; background-color: white;">
+        @TempData["Message"]
+        <button type="button" class="custom-close" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+    </div>
+}
+
+<script>
+    // Automatically hide both alerts after 5 seconds (5000 milliseconds)
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            alert.classList.remove('show');
+            alert.classList.add('fade');
+        });
+    }, 5000);
+</script>
+
+<style>
+    /* Custom close button styling */
+    .custom-close {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: black;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        right: 10px;
+    }
+</style>
+
+<style>
+    h1 {
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Optional: Text shadow for readability */
+    }
+
+    .card {
+        background-color: rgba(0, 0, 0, 0.6); /* Dark background for the cards with transparency */
+        color: white;
+    }
+
+    .btn {
+        margin-top: 10px;
+    }
+</style>
+
+<div class="background-overlay"></div>
+
+<h1>Music Store</h1>
+
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+    <p>
+        <a class="btn btn-success" asp-action="Create">Create New Track</a>
+    </p>
+}
+
+<!-- Search Form: Filter by Track Name -->
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label for="Name">Find By Track Name:</label>
+        <input type="text" name="Name" class="form-control" value="@ViewContext.HttpContext.Request.Query["Name"]" />
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- Search Form: Filter by Artist -->
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label for="Artist">Find By Artist:</label>
+        <select name="ArtistId" class="form-control">
+            <option value="">All</option>
+            @foreach (var artist in (SelectList)ViewData["Artists"])
+            {
+                var selectedArtistId = ViewContext.HttpContext.Request.Query["ArtistId"].ToString();
+                var isSelected = artist.Value == selectedArtistId ? "selected" : "";
+                <option value="@artist.Value" selected="@isSelected">@artist.Text</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- Search Form: Filter by Genre -->
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label for="Genre">Find By Genre:</label>
+        <select name="GenreId" class="form-control">
+            <option value="">All</option>
+            @foreach (var genre in (SelectList)ViewData["Genres"])
+            {
+                var selectedGenreId = ViewContext.HttpContext.Request.Query["GenreId"].ToString();
+                var isSelected = genre.Value == selectedGenreId ? "selected" : "";
+                <option value="@genre.Value" selected="@isSelected">@genre.Text</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- Display Track Cards in a Grid -->
+@for (int i = 0; i < Model.Count(); i++)
+{
+    var track = Model.ElementAt(i);
+
+    if (i % 3 == 0)
+    {
+        @: <div class="row mt-3" style="justify-content:center;">
+    }
+    <div class="col-md-3 m-3">
+        <div class="card" style="width: 18rem; height: 25rem;">
+            <div class="card-body">
+                <h3 class="card-title">@track.Name</h3>
+                <h5 class="card-text">
+                    Artists: 
+                    @foreach (var artist in track.ArtistTracks.Select(at => at.Artist))
+                    {
+                        <span>@artist.Name</span><br />
+                    }
+                </h5>
+                <h5 class="card-text">
+                    Genres:
+                    @foreach (var genre in track.TrackGenres.Select(tg => tg.Genre))
+                    {
+                        <span>@genre.GenreName</span><br />
+                    }
+                </h5>
+              <h6 class="card-text">Duration: @( ((double)track.Duration / 100).ToString("F2") )</h6>@* go kastiram vaka za da gi pishe so zapirka *@
+            </div>
+            <div class="card-body">
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@track.Id">Edit</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@track.Id">Delete</a>
+                }
+                <a class="btn btn-primary" asp-action="Details" asp-route-id="@track.Id">Details</a>
+            </div>
+            <div class="card-footer">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-controller="Tracks" asp-action="AddToPlaylist" method="post">
+                        <input type="hidden" name="id" value="@track.Id" />
+                        <button type="submit" class="btn btn-success">Add to Playlist</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+    if (i % 3 == 2)
+    {
+        @: </div>
+    }
+}
+
+@if (Model.Count() % 3 != 0)
+{
+    @: </div> <!-- Close the last row if the number of items isn't divisible by 3 -->
+}

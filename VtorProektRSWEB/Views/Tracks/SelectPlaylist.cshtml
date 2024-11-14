@@ -1,0 +1,16 @@
+﻿@model Tuple<Guid, SelectList>
+
+<h2>Select Playlist</h2>
+
+<form asp-action="AddTrackToSelectedPlaylist" method="post">
+    <input type="hidden" name="trackId" value="@Model.Item1" />
+
+    <div class="form-group">
+        <label for="playlists">Choose a playlist:</label>
+        <select name="playlistId" asp-items="Model.Item2" class="form-control">
+        </select>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add to Playlist</button>
+</form>

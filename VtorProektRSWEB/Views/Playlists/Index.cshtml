@@ -1,0 +1,51 @@
+﻿@model IEnumerable<VtorProektRSWEB.Models.Playlist>
+
+@{
+    ViewData["Title"] = "Playlists";
+}
+
+<h1>Playlists</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New Playlist</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfTracks)
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var playlist in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => playlist.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => playlist.NumberOfTracks)
+                </td>
+                <td>
+                    <form asp-action="Edit" asp-route-id="@playlist.Id" method="get" style="display:inline;">
+                        <button type="submit" class="btn btn-warning">Edit</button>
+                    </form> |
+                    <form asp-action="Details" asp-route-id="@playlist.Id" method="get" style="display:inline;">
+                        <button type="submit" class="btn btn-primary">Details</button>
+                    </form> |
+                    <form asp-action="Delete" asp-route-id="@playlist.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form> |
+                    <form asp-action="CreatePlaylistInvoice" asp-route-playlistId="@playlist.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary">Buy Playlist</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

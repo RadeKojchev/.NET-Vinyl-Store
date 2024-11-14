@@ -1,0 +1,59 @@
+﻿@model VtorProektRSWEB.Models.Playlist
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit Playlist</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<h4>Tracks</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Track Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var playlistTrack in Model.PlaylistTracks)
+        {
+            <tr>
+                <td>@playlistTrack.Track.Name</td>
+                 <td>
+                    <form asp-action="RemoveTrack" method="post">
+                        <input type="hidden" name="playlistId" value="@Model.Id" />
+                        <input type="hidden" name="trackId" value="@playlistTrack.TrackId" />
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,70 @@
+﻿@model VtorProektRSWEB.Models.Playlist
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Playlist</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            Number of Tracks
+        </dt>
+        <dd class="col-sm-10">
+            @Model.NumberOfTracks
+        </dd>
+    </dl>
+
+    <h4>Tracks</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Track Name</th>
+                <th>Artist</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var playlistTrack in Model.PlaylistTracks)
+            {
+                <tr>
+                    <td>@playlistTrack.Track?.Name </td>
+                    <td>
+                        @if (playlistTrack.Track?.ArtistTracks != null && playlistTrack.Track.ArtistTracks.Any())
+                        {
+                            foreach (var artistTrack in playlistTrack.Track.ArtistTracks)
+                            {
+                                <span>@artistTrack.Artist.Name </span>
+
+                            }
+                        }
+                        else
+                        {
+                            <span>No Artist Info</span>
+                        }
+                    </td>
+                    <td>
+                        @if (playlistTrack.Track?.Duration != null)
+                        {
+                            @(((double)playlistTrack.Track.Duration / 100).ToString("F2"))
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
